@@ -18,12 +18,12 @@ class People:
       if 'offset' in options:
         request.with_params({'offset': str(options['offset'])})
 
-      response = await request.get()
+      response = request.get()
 
       if not response.ok:
         raise Exception(response)
       
-      json_response = await response.json()
+      json_response = response.json()
       results += json_response['items']
       has_more = hasMoreResults(json_response)
       options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
@@ -32,20 +32,20 @@ class People:
 
   async def get(self, uid: str) -> Person:
     request = Request(self.store, f'crm/people/{uid}').authenticate_as_server()
-    response = await request.get()
+    response = request.get()
 
     if not response.ok:
       raise Exception(response)
-    return await response.json()
+    return response.json()
 
   async def add(self, person: dict) -> Person:
     request = Request(self.store, 'crm/people').authenticate_as_server().with_body(person)
     response = await request.post()
 
     if response.status == 400:
-      return await response.json()
+      return response.json()
     elif response.ok:
-      return await response.json()
+      return response.json()
     else:
       raise Exception(response)
 
@@ -54,9 +54,9 @@ class People:
     response = await request.put()
 
     if response.status == 400:
-      return await response.json()
+      return response.json()
     elif response.ok:
-      return await response.json()
+      return response.json()
     else:
       raise Exception(response)
 

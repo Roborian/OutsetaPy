@@ -27,12 +27,12 @@ class EmailListSubscriptions:
       if 'offset' in options:
         request.with_params({'offset': str(options['offset'])})
 
-      response = await request.get()
+      response = request.get()
 
       if not response.ok:
         raise response
       
-      json_response = await response.json()
+      json_response = response.json()
       results += json_response
       has_more = hasMoreResults(json_response)
       options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
@@ -47,7 +47,7 @@ class EmailListSubscriptions:
     response = await request.post()
 
     if response.status == 400:
-      raise ValidationError(await response.json())
+      raise ValidationError(response.json())
     elif response.ok:
       return None
     else:

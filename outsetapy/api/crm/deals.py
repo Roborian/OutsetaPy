@@ -35,11 +35,11 @@ class Deals:
       if 'deal_pipeline_stage' in options:
         request.with_params({'DealPipelineStage.Uid': options['deal_pipeline_stage']})
 
-      response = await request.get()
+      response = request.get()
       if not response.ok:
         raise response
       
-      json_response = await response.json()
+      json_response = response.json()
       results += json_response['items']
       has_more = hasMoreResults(json_response)
       options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
@@ -51,12 +51,12 @@ class Deals:
       .with_params({'fields': fields or Deals.DEFAULT_FIELDS}) \
       .authenticate_as_server()
 
-    response = await request.get()
+    response = request.get()
 
     if not response.ok:
       raise response
 
-    json_response = await response.json()
+    json_response = response.json()
     return Deal(**json_response)
 
   async def add(self, deal: DealAdd, fields=None) -> Union[Deal, ValidationError[Deal]]:
@@ -68,9 +68,9 @@ class Deals:
     response = await request.post()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      json_response = await response.json()
+      json_response = response.json()
       return Deal(**json_response)
     else:
       raise response
@@ -84,9 +84,9 @@ class Deals:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      json_response = await response.json()
+      json_response = response.json()
       return Deal(**json_response)
     else:
       raise response

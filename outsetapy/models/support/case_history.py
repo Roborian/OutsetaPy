@@ -1,7 +1,6 @@
+import importlib
 from typing import Optional
 from datetime import datetime
-
-from .case import Case
 
 class CaseHistory:
   def __init__(
@@ -19,7 +18,6 @@ class CaseHistory:
     NewUvi: Optional[str] = None,
   ):
     self.HistoryDateTime = HistoryDateTime
-    self.Case = Case
     self.AgentName = AgentName
     self.Comment = Comment
     self.Type = Type
@@ -30,3 +28,8 @@ class CaseHistory:
     self.Uid = Uid
     self.Created = Created
     self.Updated = Updated
+
+    def get_case(self):
+      #todo: check if this is correcy
+      Case = importlib.import_module('outsetapy.models.support.case').Case
+      return Case(self.caseId)

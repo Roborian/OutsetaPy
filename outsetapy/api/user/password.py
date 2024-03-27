@@ -17,7 +17,7 @@ class Password:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
       return None
     else:

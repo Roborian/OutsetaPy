@@ -32,10 +32,10 @@ class Activities:
       if 'EntityUid' in options:
         request.with_params({'EntityUid': str(options['EntityUid'])})
 
-      response = await request.get()
+      response = request.get()
 
       if response.ok:
-        json_response = await response.json()
+        json_response = response.json()
         results += json_response['items']
         has_more = hasMoreResults(json_response)
         options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
@@ -52,9 +52,9 @@ class Activities:
     response = await request.post()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      json_response = await response.json()
+      json_response = response.json()
       return Activity(json_response)
     else:
       raise response

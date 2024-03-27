@@ -1,17 +1,17 @@
-import { Subscription } from './subscription';
-import { InvoiceLineItem } from './invoice-line-item';
+from .invoice_line_item import InvoiceLineItem
+from .subscription import Subscription
 
-export interface Invoice {
-  InvoiceDate: Date;
-  PaymentReminderSentDate?: Date;
-  Number: number;
-  BillingInvoiceStatus: number;
-  Subscription: Subscription;
-  Amount: number;
-  AmountOutstanding: number;
-  InvoiceLineItems: InvoiceLineItem[];
-  IsUserGenerated: boolean;
-  Uid: string;
-  Created: Date;
-  Updated: Date;
-}
+class Invoice:
+  def __init__(self):
+    self.InvoiceDate = None
+    self.PaymentReminderSentDate = None
+    self.Number = 0
+    self.BillingInvoiceStatus = 0
+    self.Subscription = Subscription()
+    self.Amount = 0
+    self.AmountOutstanding = 0
+    self.InvoiceLineItems = []
+    self.IsUserGenerated = False
+    self.Uid = ""
+    self.Created = None
+    self.Updated = None

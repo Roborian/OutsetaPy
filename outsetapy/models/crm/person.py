@@ -3,10 +3,6 @@ from outsetapy.models.crm.account import Account
 from outsetapy.models.crm.deal_person import DealPerson
 from outsetapy.models.crm.person_account import PersonAccount
 
-# import { Address } from '../shared/address';
-# import { Account } from './account';
-# import { DealPerson } from './deal-person';
-# import { PersonAccount } from './person-account';
 class Person:
   def __init__(self):
     self.Email = ""

@@ -44,11 +44,11 @@ class Accounts:
       .with_params({
         'fields': options.get('fields', '*,PersonAccount.*,PersonAccount.Person.Uid')
       })
-    response = await request.get()
+    response = request.get()
 
     if not response.ok:
       raise response
-    response_json = await response.json()
+    response_json = response.json()
     return Account(response_json)
 
   async def add(self, account: dict, options: dict = {}) -> Union[Account, ValidationError[Account]]:
@@ -61,9 +61,9 @@ class Accounts:
     response = await request.post()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      response_json = await response.json()
+      response_json = response.json()
       return Account(response_json)
     else:
       raise response
@@ -78,9 +78,9 @@ class Accounts:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      response_json = await response.json()
+      response_json = response.json()
       return Account(response_json)
     else:
       raise response
@@ -93,7 +93,7 @@ class Accounts:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
       return None
     else:
@@ -116,7 +116,7 @@ class Accounts:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
       return None
     else:
@@ -128,7 +128,7 @@ class Accounts:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
       return None
     else:
@@ -140,7 +140,7 @@ class Accounts:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
       return None
     else:

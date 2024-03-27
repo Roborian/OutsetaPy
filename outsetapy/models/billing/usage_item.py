@@ -1,12 +1,14 @@
-import { Invoice } from "./invoice";
-import { SubscriptionAddOn } from "./subscription-add-on";
+from typing import Optional
+from datetime import date
+from .invoice import Invoice
+from .subscription_add_on import SubscriptionAddOn
 
-export interface UsageItem {
-  UsageDate: Date;
-  Invoice?: Invoice;
-  SubscriptionAddOn: SubscriptionAddOn;
-  Amount: number;
-  Uid: string;
-  Created: Date;
-  Updated: Date;
-}
+class UsageItem:
+  def __init__(self, UsageDate: date, SubscriptionAddOn: SubscriptionAddOn, Amount: float, Uid: str, Created: date, Updated: date, Invoice: Optional[Invoice] = None):
+    self.UsageDate = UsageDate
+    self.SubscriptionAddOn = SubscriptionAddOn
+    self.Amount = Amount
+    self.Uid = Uid
+    self.Created = Created
+    self.Updated = Updated
+    self.Invoice = Invoice

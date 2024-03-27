@@ -18,11 +18,11 @@ class Profile:
     if fields:
       request.with_params({'fields': fields})
 
-    response = await request.get()
+    response = request.get()
 
     if not response.ok:
       raise response
-    return Person(await response.json())
+    return Person(response.json())
 
 
 
@@ -33,8 +33,8 @@ class Profile:
     response = await request.put()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      return Person(await response.json())
+      return Person(response.json())
     else:
       raise response

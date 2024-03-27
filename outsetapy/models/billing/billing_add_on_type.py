@@ -1,5 +1,4 @@
-export enum BillingAddOnType {
-  Fixed = 1,
-  Usage,
-  OneTime
-}
+class BillingAddOnType:
+  Fixed = 1
+  Usage = 2
+  OneTime = 3

@@ -1,352 +1,132 @@
-import { SubscriptionAddOn } from '../../models/billing/subscription-add-on';
-import { Store } from '../../util/store';
-import { ValidationError } from '../../models/wrappers/validation-error';
-import { Request } from '../../util/request';
-import { Subscription } from '../../models/billing/subscription';
-import { Plan } from '../../models/billing/plan';
-import { Account } from '../../models/crm/account';
-import { BillingRenewalTerm } from '../../models/billing/billing-renewal-term';
-import { List } from '../../models/wrappers/list';
-import { ChargeSummary } from '../../models/billing/charge-summary';
+from outsetapy.models.billing.subscription_add_on import SubscriptionAddOn
+from outsetapy.models.billing.plan_family import PlanFamily
+from outsetapy.util.store import Store
+from outsetapy.models.wrappers.validation_error import ValidationError
+from outsetapy.util.request import Request, hasMoreResults
+from outsetapy.models.billing.subscription import Subscription
+from outsetapy.models.billing.plan import Plan
+from outsetapy.models.crm.account import Account
+from outsetapy.models.billing.billing_renewal_term import BillingRenewalTerm
+from outsetapy.models.wrappers.list import List
+from outsetapy.models.billing.charge_summary import ChargeSummary
 
-export class Subscriptions {
-  private readonly store: Store;
+class SubscriptionAdd:
+  def __init__(self, subscription: dict):
+    self.__dict__ = subscription
 
-  constructor(store: Store) {
-    this.store = store;
-  }
+class SubscriptionUpdate:
+  def __init__(self, subscription: dict):
+    self.__dict__ = subscription
 
-  /**
-   * Get all subscriptions from Outseta:
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.getAll();
-   * console.log(response);
-   * ```
-   *
-   * Get all subscriptions for a particular account from Outseta:
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const Account = {
-   *   Uid: 'jW7GJVWq'
-   * };
-   * const response = await client.billing.subscriptions.getAll({ Account });
-   * console.log(response);
-   * ```
-   *
-   * @param options.limit The number of results returned by the API.
-   * @param options.offset For pagination; returns (limit) results after this value.
-   * @param options.Account Get all subscriptions only for a particular account.
-   * @param options.fields Not all fields on the model are returned by default - you can request specific fields with a
-   *   that looks something like '*,Plan.*,Account.Uid'. Note: the shape of the returned object may not match the model
-   *   in this library if this string does not start with '*' as shown.
-   * @returns The response body if response status OK.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async getAll(options: {
-    Account?: Required<Pick<Account, 'Uid'>>,
-    limit?: number,
-    offset?: number,
-    fields?: string
-  } = {}): Promise<List<Subscription>> {
-    const request = new Request(this.store, 'billing/subscriptions').authenticateAsServer();
+class SubscriptionUpgradeRequired:
+  def __init__(self, subscription: dict):
+    self.__dict__ = subscription
 
-    if (options.Account) request.withParams({ 'Account.Uid': options.Account.Uid });
-    if (options.limit) request.withParams({ limit: `${options.limit}` });
-    if (options.offset) request.withParams({ offset: `${options.offset}` });
-    options.fields ? request.withParams({ fields: `${options.fields}` }) : request.withParams({
-      fields: '*,Account.Uid,Plan.Uid'
-    });
 
-    const response = await request.get();
+class Subscriptions:
+  def __init__(self, store: Store):
+    self.store = store
 
-    if (!response.ok) throw response;
-    return await response.json() as List<Subscription>;
-  }
+  #! this must be incorrect, this should return all subscriptions, right?
+  async def get_all(self, options: dict = {}) -> List[PlanFamily]:
+    has_more = True
+    results = []
+    while has_more:
+      request = Request(self.store, 'billing/planfamilies')
+      if 'limit' in options:
+        request.with_params({'limit': str(options['limit'])})
+      if 'offset' in options:
+        request.with_params({'offset': str(options['offset'])})
 
-  /**
-   * Get a specific subscription from Outseta:
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.get(uid);
-   * console.log(response);
-   * ```
-   *
-   * @param uid The uid of the subscription to retrieve.
-   * @param options.fields Not all fields on the model are returned by default - you can request specific fields with a
-   *   that looks something like '*,Plan.*,Account.Uid'. Note: the shape of the returned object may not match the model
-   *   in this library if this string does not start with '*' as shown.
-   * @returns The response body if response status OK.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async get(uid: string, options: {
-    fields?: string
-  } = {}): Promise<Subscription> {
-    const request = new Request(this.store, `billing/subscriptions/${uid}`)
-      .authenticateAsServer();
+      response = request.get()
+      if not response.ok:
+        raise response
+      
+      json_response = response.json()
+      results += json_response['items']
+      has_more = hasMoreResults(json_response)
+      options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
 
-    options.fields ? request.withParams({ fields: `${options.fields}` }) : request.withParams({
-      fields: '*,Account.Uid,Plan.Uid'
-    });
+    return [PlanFamily(json_obj) for json_obj in results]
 
-    const response = await request.get();
+  async def get(self, uid: str, options: dict = {}) -> Subscription:
+    request = Request(self.store, f'billing/subscriptions/{uid}').authenticate_as_server()
 
-    if (!response.ok) throw response;
-    return await response.json() as Subscription;
-  }
+    if 'fields' in options:
+      request.with_params({'fields': options['fields']})
+    else:
+      request.with_params({'fields': '*,Account.Uid,Plan.Uid'})
 
-  /**
-   * Add a subscription to an account for the first time.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.add({
-   *   Account: {
-   *     Uid: accountUid
-   *   },
-   *   Plan: {
-   *     Uid: planUid
-   *   },
-   *   BillingRenewalTerm: 1 // Monthly, 2 for Annually
-   * });
-   * console.log(response);
-   * ```
-   *
-   * @param subscription The subscription to add.
-   * @returns The response body if response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async add(subscription: SubscriptionAdd): Promise<Subscription | ValidationError<Subscription>> {
-    const request = new Request(this.store, 'billing/subscriptions/firsttimesubscription')
-      .authenticateAsServer()
-      .withBody(subscription);
-    const response = await request.put();
+    response = request.get()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<Subscription>;
-    else if (response.ok)
-      return await response.json() as Subscription;
-    else throw response;
-  }
+    if not response.ok:
+      raise response
+    json_response = response.json()
+    return Subscription(json_response)
 
-  /**
-   * Like `add`, but returns an Invoice object without actually saving any changes. Used to show the user what they
-   * would be charged.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.previewAdd({
-   *   Account: {
-   *     Uid: accountUid
-   *   },
-   *   Plan: {
-   *     Uid: planUid
-   *   },
-   *   BillingRenewalTerm: 1 // Monthly, 2 for Annually
-   * });
-   * console.log(response);
-   * ```
-   *
-   * @param subscription The subscription to preview charges for.
-   * @returns The response body if response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async previewAdd(subscription: SubscriptionAdd): Promise<ChargeSummary | ValidationError<Subscription>> {
-    const request = new Request(this.store, 'billing/subscriptions/compute-charge-summary')
-      .authenticateAsServer()
-      .withBody(subscription);
-    const response = await request.post();
+  async def add(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
+    request = Request(self.store, 'billing/subscriptions/firsttimesubscription').authenticate_as_server().with_body(subscription)
+    response = await request.put()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<Subscription>;
-    else if (response.ok)
-      return await response.json() as ChargeSummary;
-    else throw response;
-  }
+    if response.status == 400:
+      raise ValidationError(response.json())
+    elif response.ok:
+      return Subscription(response.json())
+    else:
+      raise response
 
-  /**
-   * Update an existing subscription.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.update({
-   *   Uid: uid,
-   *   Account: {
-   *     Uid: accountUid
-   *   },
-   *   Plan: {
-   *     Uid: planUid
-   *   },
-   *   SubscriptionAddOns: [],
-   *   BillingRenewalTerm: 1 // Monthly, 2 for Annually
-   * });
-   * console.log(response);
-   * ```
-   *
-   * @param subscription The subscription to update.
-   * @returns The response body if response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async update(subscription: SubscriptionUpdate): Promise<Subscription | ValidationError<Subscription>> {
-    const request = new Request(this.store, `billing/subscriptions/${subscription.Uid}/changesubscription`)
-      .authenticateAsServer()
-      .withBody(subscription);
-    const response = await request.put();
+  async def preview_add(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
+    request = Request(self.store, 'billing/subscriptions/compute-charge-summary').authenticate_as_server().with_body(subscription)
+    response = await request.post()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<Subscription>;
-    else if (response.ok)
-      return await response.json() as Subscription;
-    else throw response;
-  }
+    if response.status == 400:
+      raise ValidationError(response.json())
+    elif response.ok:
+      return ChargeSummary(response.json())
+    else:
+      raise response
 
-  /**
-   * Like `update`, but returns an Invoice object without actually saving any changes. Used to show the user what they
-   * would be charged.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.previewUpdate({
-   *   Uid: uid,
-   *   Account: {
-   *     Uid: accountUid
-   *   },
-   *   Plan: {
-   *     Uid: planUid
-   *   },
-   *   SubscriptionAddOns: [],
-   *   BillingRenewalTerm: 1 // Monthly, 2 for Annually
-   * });
-   * console.log(response);
-   * ```
-   *
-   * @param subscription The subscription to update.
-   * @returns The response body if response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async previewUpdate(subscription: SubscriptionUpdate): Promise<ChargeSummary | ValidationError<Subscription>> {
-    const request = new Request(this.store, `billing/subscriptions/${subscription.Uid}/changesubscriptionpreview`)
-      .authenticateAsServer()
-      .withBody(subscription);
-    const response = await request.put();
+  async def update(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
+    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscription').authenticate_as_server().with_body(subscription)
+    response = await request.put()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<Subscription>;
-    else if (response.ok)
-      return await response.json() as ChargeSummary;
-    else throw response;
-  }
+    if response.status == 400:
+      raise ValidationError(response.json())
+    elif response.ok:
+      return Subscription(response.json())
+    else:
+      raise response
 
-  /**
-   * Set the "subscription upgrade required" flag on the subscription.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.setSubscriptionUpgradeRequired({
-   *   IsPlanUpgradeRequired: true,
-   *   PlanUpgradeRequiredMessage: 'Usage too high',
-   *   Uid: 'LmJMEYWP'
-   * });
-   * console.log(response);
-   * ```
-   *
-   * @param subscription The subscription with 'IsPlanUpgradeRequired' and a 'PlanUpgradeRequiredMessage' if desired.
-   * @returns The response body if response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async setSubscriptionUpgradeRequired(subscription: SubscriptionUpgradeRequired): Promise<Subscription | ValidationError<null>> {
-    const request = new Request(this.store, `billing/subscriptions/${subscription.Uid}/setsubscriptionupgraderequired`)
-      .authenticateAsServer()
-      .withBody(subscription);
-    const response = await request.put();
+  async def preview_update(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
+    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscriptionpreview').authenticate_as_server().with_body(subscription)
+    response = await request.put()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<null>;
-    else if (response.ok)
-      return await response.json() as Subscription;
-    else throw response;
-  }
+    if response.status == 400:
+      raise ValidationError(response.json())
+    elif response.ok:
+      return ChargeSummary(response.json())
+    else:
+      raise response
 
-  /**
-   * Convert a trial into a subscription.
-   * ```typescript
-   * const client = new OutsetaApiClient({
-   *   subdomain: 'test-company',
-   *   apiKey: example_key,
-   *   secretKey: example_secret
-   * });
-   * const response = await client.billing.subscriptions.changeTrialToSubscribed(uid);
-   * console.log(response);
-   * ```
-   *
-   * @param uid The uid of the subscription to convert to a subscription.
-   * @returns Null if the response status OK, or response body of validation errors if response status 400.
-   * @throws [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) If the server returns a
-   *  non-"OK" status, the whole response object will be thrown.
-   */
-  public async changeTrialToSubscribed(uid: string): Promise<null | ValidationError<Account>> {
-    const request = new Request(this.store, `billing/subscriptions/${uid}/changetrialtosubscribed`)
-      .authenticateAsServer();
-    const response = await request.put();
+  async def set_subscription_upgrade_required(self, subscription: dict) -> Subscription | ValidationError[None]:
+    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/setsubscriptionupgraderequired').authenticate_as_server().with_body(subscription)
+    response = await request.put()
 
-    if (response.status === 400)
-      return await response.json() as ValidationError<Account>;
-    else if (response.ok)
-      return null;
-    else throw response;
-  }
-}
+    if response.status == 400:
+      raise ValidationError(response.json())
+    elif response.ok:
+      return Subscription(response.json())
+    else:
+      raise response
 
-export interface SubscriptionAdd extends Partial<Omit<Subscription, 'Plan' | 'Account'>> {
-  [key: string]: unknown;
-  Plan: { Uid: string } & Partial<Plan>;
-  BillingRenewalTerm: BillingRenewalTerm;
-  Account: { Uid: string } & Partial<Account>;
-}
+  async def change_trial_to_subscribed(self, uid: str) -> None | ValidationError[Account]:
+    request = Request(self.store, f'billing/subscriptions/{uid}/changetrialtosubscribed').authenticate_as_server()
+    response = await request.put()
 
-export interface SubscriptionUpdate extends Partial<SubscriptionAdd> {
-  [key: string]: unknown;
-  Uid: string;
-  SubscriptionAddOns: SubscriptionAddOn[];
-}
+    if response.status == 400:
+      raise Exception(response.json())
+    elif response.ok:
+      return None
+    else:
+      raise response
 
-export interface SubscriptionUpgradeRequired extends Partial<Subscription> {
-  [key: string]: unknown;
-  Uid: string;
-  IsPlanUpgradeRequired: boolean;
-  PlanUpgradeRequiredMessage?: string;
-}

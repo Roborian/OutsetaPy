@@ -1,7 +1,7 @@
-from models.billing.plan_family import PlanFamily
+from outsetapy.models.billing.plan_family import PlanFamily
 from outsetapy.util.request import Request, hasMoreResults
 from outsetapy.util.store import Store
-from models.wrappers.list import List
+from outsetapy.models.wrappers.list import List
 
 class PlanFamilies:
   def __init__(self, store: Store):

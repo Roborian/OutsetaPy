@@ -36,13 +36,13 @@ class Cases:
         elif 'Email' in from_person:
           request.with_params({'FromPerson.Email': from_person['Email']})
 
-      response = await request.get()
+      response = request.get()
 
       if not response.ok:
         raise response
 
-      response_json = await response.json()
-      results += response_json
+      response_json = response.json()
+      results += response_json['items']
       has_more = hasMoreResults(response_json)
       options['offset'] = response_json['metadata']['offset'] + response_json['metadata']['limit']
 
@@ -60,9 +60,9 @@ class Cases:
     response = await request.post()
 
     if response.status == 400:
-      raise Exception(await response.json())
+      raise Exception(response.json())
     elif response.ok:
-      response_json = await response.json()
+      response_json = response.json()
       return Case(response_json)
     else:
       raise response
@@ -84,8 +84,7 @@ class Cases:
     response = await request.post()
 
     if response.ok:
-      # return await response.json() as CaseHistory
-      return CaseHistory(await response.json())
+      return CaseHistory(response.json())
     else:
       raise response
 

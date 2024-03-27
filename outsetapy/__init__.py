@@ -1,5 +1,5 @@
-# from outsetapy.api.marketing import Marketing
-# from outsetapy.api.support import Support
+from outsetapy.api.marketing import Marketing
+from outsetapy.api.support import Support
 from outsetapy.util.credentials import ServerCredentials, UserCredentials
 from outsetapy.util.store import Store
 from outsetapy.api.user import User
@@ -39,6 +39,6 @@ class OutsetaApiClient:
 
         self.billing = Billing(store)
         self.crm = Crm(store)
-        # self.marketing = Marketing(store)
-        # self.support = Support(store)
+        self.marketing = Marketing(store)
+        self.support = Support(store)
         self.user = User(store)

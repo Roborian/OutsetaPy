@@ -26,7 +26,7 @@ class User:
     if not response.ok:
       raise Exception(response)
 
-    response_body = await response.json()
+    response_body = response.json()
     self.store.user_auth.access_token = response_body['access_token']
     return response_body
 
@@ -43,6 +43,6 @@ class User:
     if not response.ok:
       raise Exception(response)
 
-    response_body = await response.json()
+    response_body = response.json()
     self.store.user_auth.access_token = response_body['access_token']
     return response_body
