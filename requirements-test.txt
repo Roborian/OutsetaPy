@@ -1,0 +1,5 @@
+psutil==5.9.8
+pytest==8.1.1
+pytest-timeout==2.3.1
+mypy==1.9.0
+types-setuptools==67.2.0.1
