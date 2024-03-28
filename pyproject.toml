@@ -1,0 +1,18 @@
+[project]
+name = "outsetapy"
+version = "0.1.0"
+authors = [
+  { name="Roborian, Inc", email="info@roborian.com" },
+]
+description = "A SDK for building applications with Outseta"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/Roborian/outsetapy"
+Issues = "https://github.com/Roborian/outsetapy/issues"
