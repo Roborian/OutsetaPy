@@ -5,7 +5,7 @@ from unittest import mock
 import pytest
 
 @pytest.fixture
-def test_setup():
+def get_environment():
     options = {}
     options['subdomain'] = os.getenv('OUTSETA_SUBDOMAIN', 'x')
     options['apiKey'] = os.getenv('OUTSETA_API_KEY', 'x')
