@@ -64,7 +64,7 @@ class Subscriptions:
     json_response = response.json()
     return Subscription(json_response)
 
-  async def add(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
+  async def add(self, subscription: dict) -> Subscription:
     request = Request(self.store, 'billing/subscriptions/firsttimesubscription').authenticate_as_server().with_body(subscription)
     response = await request.put()
 
@@ -75,7 +75,7 @@ class Subscriptions:
     else:
       raise response
 
-  async def preview_add(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
+  async def preview_add(self, subscription: dict) -> ChargeSummary:
     request = Request(self.store, 'billing/subscriptions/compute-charge-summary').authenticate_as_server().with_body(subscription)
     response = await request.post()
 
@@ -86,7 +86,7 @@ class Subscriptions:
     else:
       raise response
 
-  async def update(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
+  async def update(self, subscription: dict) -> Subscription:
     request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscription').authenticate_as_server().with_body(subscription)
     response = await request.put()
 
@@ -97,7 +97,7 @@ class Subscriptions:
     else:
       raise response
 
-  async def preview_update(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
+  async def preview_update(self, subscription: dict) -> ChargeSummary:
     request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscriptionpreview').authenticate_as_server().with_body(subscription)
     response = await request.put()
 
@@ -108,7 +108,7 @@ class Subscriptions:
     else:
       raise response
 
-  async def set_subscription_upgrade_required(self, subscription: dict) -> Subscription | ValidationError[None]:
+  async def set_subscription_upgrade_required(self, subscription: dict) -> Subscription:
     request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/setsubscriptionupgraderequired').authenticate_as_server().with_body(subscription)
     response = await request.put()
 
@@ -119,7 +119,7 @@ class Subscriptions:
     else:
       raise response
 
-  async def change_trial_to_subscribed(self, uid: str) -> None | ValidationError[Account]:
+  async def change_trial_to_subscribed(self, uid: str) -> None:
     request = Request(self.store, f'billing/subscriptions/{uid}/changetrialtosubscribed').authenticate_as_server()
     response = await request.put()
 
