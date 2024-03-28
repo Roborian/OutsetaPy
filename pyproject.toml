@@ -14,7 +14,7 @@ classifiers = [
 ]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "requests"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
