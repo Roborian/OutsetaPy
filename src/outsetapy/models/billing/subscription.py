@@ -1,37 +1,52 @@
 from typing import Optional
 from datetime import datetime
-import importlib
+from dataclasses import dataclass
+from billing_renewal_term import BillingRenewalTerm as _BillingRenewalTerm
 
 
+@dataclass
 class Subscription:
-    def __init__(
-        self,
-        plan,
-        billing_renewal_term,
-        account,
-        subscription_add_ons=None,
-        quantity=None,
-        start_date=None,
-        end_date=None,
-        renewal_date=None,
-        new_required_quantity=None,
-        is_plan_upgrade_required=None,
-        plan_upgrade_required_message=None,
-        discount_coupon_subscriptions=None,
-        created=None,
-        updated=None,
-    ):
-        self.Plan = plan
-        self.BillingRenewalTerm = billing_renewal_term
-        self.Account = account
-        self.SubscriptionAddOns = subscription_add_ons
-        self.Quantity = quantity
-        self.StartDate = start_date
-        self.EndDate = end_date
-        self.RenewalDate = renewal_date
-        self.NewRequiredQuantity = new_required_quantity
-        self.IsPlanUpgradeRequired = is_plan_upgrade_required
-        self.PlanUpgradeRequiredMessage = plan_upgrade_required_message
-        self.DiscountCouponSubscriptions = discount_coupon_subscriptions
-        self.Created = created
-        self.Updated = updated
+    Uid: str
+    BillingRenewalTerm: _BillingRenewalTerm
+    Account_Uid: Optional[str]
+    Plan_Uid: Optional[str]
+    Quantity: Optional[float]
+    StartDate: datetime
+    EndDate: Optional[datetime]
+    RenewalDate: Optional[datetime]
+    NewRequiredQuantity: Optional[float]
+    IsPlanUpgradeRequired: bool
+    PlanUpgradeRequiredMessage: Optional[str]
+    Created: datetime
+    Updated: datetime
+
+    def __init(self, data: object):
+        self.Uid = None
+        self.BillingRenewalTerm = None
+        self.Account_Uid = None
+        self.Plan_Uid = None
+        self.Quantity = None
+        self.StartDate = None
+        self.EndDate = None
+        self.RenewalDate = None
+        self.NewRequiredQuantity = None
+        self.IsPlanUpgradeRequired = None
+        self.PlanUpgradeRequiredMessage = None
+        self.Created = None
+        self.Updated = None
+        if "_objectType" in data and data["_objectType"] == "Subscription":
+            self.Uid = data["Uid"]
+            self.BillingRenewalTerm = data["BillingRenewalTerm"]
+            self.Account_Uid = data["Account.Uid"]
+            self.Plan_Uid = data["Plan.Uid"]
+            self.Quantity = data["Quantity"]
+            self.StartDate = data["StartDate"]
+            self.EndDate = data["EndDate"]
+            self.RenewalDate = data["RenewalDate"]
+            self.NewRequiredQuantity = data["NewRequiredQuantity"]
+            self.IsPlanUpgradeRequired = data["IsPlanUpgradeRequired"]
+            self.PlanUpgradeRequiredMessage = data["PlanUpgradeRequiredMessage"]
+            self.Created = data["Created"]
+            self.Updated = data["Updated"]
+        else:
+            raise ValueError("Invalid object type")

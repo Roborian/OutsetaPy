@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 from datetime import date
-from .plan_family import PlanFamily
+from .plan_family import PlanFamily as _PlanFamily
 from .plan_add_on import PlanAddOn
 
 
@@ -9,7 +9,7 @@ from .plan_add_on import PlanAddOn
 class Plan:
     Name: str
     Description: str
-    PlanFamily: PlanFamily
+    PlanFamily: _PlanFamily
     IsQuantityEditable: bool
     MinimumQuantity: int
     MonthlyRate: int
