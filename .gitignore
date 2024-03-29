@@ -4,3 +4,4 @@ dist/
 build/
 .env
 private.md
+src/outsetapy.egg-info/
