@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List, Union
-from outsetapy.models.wrappers.list import List
 from outsetapy.models.crm.account import Account
 from outsetapy.util.request import Request, hasMoreResults
 from outsetapy.models.crm.account_stage import AccountStage

@@ -2,7 +2,6 @@ from outsetapy.util.store import Store
 from outsetapy.models.crm.person import Person
 from outsetapy.util.request import Request, hasMoreResults
 from outsetapy.models.wrappers.list import List
-from outsetapy.models.wrappers.validation_error import ValidationError
 
 
 class People:

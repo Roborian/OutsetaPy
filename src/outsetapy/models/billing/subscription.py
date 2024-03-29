@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass
-from billing_renewal_term import BillingRenewalTerm as _BillingRenewalTerm
+from .billing_renewal_term import BillingRenewalTerm as _BillingRenewalTerm
 
 
 @dataclass

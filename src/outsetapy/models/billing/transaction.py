@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from outsetapy.models.crm.account import Account
 from outsetapy.models.billing.billing_transaction_type import BillingTransactionType
 from outsetapy.models.billing.invoice import Invoice

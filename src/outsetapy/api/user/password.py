@@ -1,7 +1,6 @@
 from outsetapy.util.request import Request
 from outsetapy.util.store import Store
 from outsetapy.models.wrappers.validation_error import ValidationError
-from outsetapy.models.crm.person import Person
 
 
 class Password:
@@ -19,7 +18,7 @@ class Password:
         response = await request.put()
 
         if response.status == 400:
-            raise Exception(response.json())
+            raise ValidationError(response.json())
         elif response.ok:
             return None
         else:

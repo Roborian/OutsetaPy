@@ -1,4 +1,3 @@
-from .invoice_line_item import InvoiceLineItem
 from .subscription import Subscription
 
 
