@@ -3,20 +3,23 @@ from urllib.parse import urljoin, urlencode
 from typing import Dict, Any
 from outsetapy.static import OUTSETAPY_VERSION
 
+
 class Request:
     def __init__(self, store, endpoint):
         self.store = store
-        endpoint = endpoint.lstrip('/')
+        endpoint = endpoint.lstrip("/")
         self.url = urljoin(store.base_url, endpoint)
         self._options = {
-            'headers': {
-                'Content-Type': 'application/json',
-                'user-agent': 'OutsetaPy/'+OUTSETAPY_VERSION
+            "headers": {
+                "Content-Type": "application/json",
+                "user-agent": "OutsetaPy/" + OUTSETAPY_VERSION,
             }
         }
 
     def authenticate_as_user(self):
-        self._options['headers']['Authorization'] = self.store.user_auth.authorization_header
+        self._options["headers"][
+            "Authorization"
+        ] = self.store.user_auth.authorization_header
         return self
 
     def authenticate_as_user_preferred(self):
@@ -27,7 +30,9 @@ class Request:
         return self
 
     def authenticate_as_server(self):
-        self._options['headers']['Authorization'] = self.store.server_auth.authorization_header
+        self._options["headers"][
+            "Authorization"
+        ] = self.store.server_auth.authorization_header
         return self
 
     def authenticate_as_server_preferred(self):
@@ -38,34 +43,38 @@ class Request:
         return self
 
     def with_params(self, params: Dict[str, str]):
-        self.url += '?' + urlencode(params)
+        self.url += "?" + urlencode(params)
         return self
 
     def with_body(self, body: Dict[str, Any]):
-        if 'body' in self._options:
-            existing_body = self._options['body']
+        if "body" in self._options:
+            existing_body = self._options["body"]
             body = {**existing_body, **body}
-        self._options['body'] = body
+        self._options["body"] = body
         return self
 
     def get(self) -> requests.Response:
-        return self.execute('GET')
+        return self.execute("GET")
 
     def post(self) -> requests.Response:
-        return self.execute('POST')
+        return self.execute("POST")
 
     def put(self) -> requests.Response:
-        return self.execute('PUT')
+        return self.execute("PUT")
 
     def patch(self) -> requests.Response:
-        return self.execute('PATCH')
+        return self.execute("PATCH")
 
     def delete(self) -> requests.Response:
-        return self.execute('DELETE')
+        return self.execute("DELETE")
 
     def execute(self, method) -> requests.Response:
-        self._options['method'] = method
+        self._options["method"] = method
         return requests.request(**self._options, url=self.url)
-    
+
+
 def hasMoreResults(meta) -> bool:
-    return meta['metadata']['total'] > meta['metadata']['offset'] + meta['metadata']['limit']
+    return (
+        meta["metadata"]["total"]
+        > meta["metadata"]["offset"] + meta["metadata"]["limit"]
+    )

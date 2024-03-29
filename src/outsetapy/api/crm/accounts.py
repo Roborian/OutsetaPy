@@ -7,157 +7,204 @@ from outsetapy.models.crm.account_stage import AccountStage
 from outsetapy.models.wrappers.validation_error import ValidationError
 from outsetapy.models.billing.subscription import Subscription
 
+
 class Accounts:
-  def __init__(self, store):
-    self.store = store
+    def __init__(self, store):
+        self.store = store
 
-  async def get_all(self, options: dict = {}) -> List[Account]:
-    has_more = True
-    results = []
-    while has_more:
-      request = Request(self.store, 'crm/accounts') \
-        .authenticate_as_server() \
-        .with_params({
-          'fields': options.get('fields', '*,PersonAccount.*,PersonAccount.Person.Uid')
-        })
-      if 'limit' in options:
-        request.with_params({'limit': str(options['limit'])})
-      if 'offset' in options:
-        request.with_params({'offset': str(options['offset'])})
-      if 'accountStage' in options:
-        request.with_params({'AccountStage': str(options['accountStage'])})
+    async def get_all(self, options: dict = {}) -> List[Account]:
+        has_more = True
+        results = []
+        while has_more:
+            request = (
+                Request(self.store, "crm/accounts")
+                .authenticate_as_server()
+                .with_params(
+                    {
+                        "fields": options.get(
+                            "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                        )
+                    }
+                )
+            )
+            if "limit" in options:
+                request.with_params({"limit": str(options["limit"])})
+            if "offset" in options:
+                request.with_params({"offset": str(options["offset"])})
+            if "accountStage" in options:
+                request.with_params({"AccountStage": str(options["accountStage"])})
 
-      response = request.get()
-      if not response.ok:
-        raise response
-      
-      json_response = response.json()
-      results += json_response['items']
-      has_more = hasMoreResults(json_response)
-      options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
+            response = request.get()
+            if not response.ok:
+                raise response
 
-    return [Account(json_obj) for json_obj in results]
+            json_response = response.json()
+            results += json_response["items"]
+            has_more = hasMoreResults(json_response)
+            options["offset"] = (
+                json_response["metadata"]["offset"] + json_response["metadata"]["limit"]
+            )
 
-  async def get(self, uid: str, options: dict = {}) -> Account:
-    request = Request(self.store, f'crm/accounts/{uid}') \
-      .authenticate_as_server() \
-      .with_params({
-        'fields': options.get('fields', '*,PersonAccount.*,PersonAccount.Person.Uid')
-      })
-    response = request.get()
+        return [Account(json_obj) for json_obj in results]
 
-    if not response.ok:
-      raise response
-    response_json = response.json()
-    return Account(response_json)
+    async def get(self, uid: str, options: dict = {}) -> Account:
+        request = (
+            Request(self.store, f"crm/accounts/{uid}")
+            .authenticate_as_server()
+            .with_params(
+                {
+                    "fields": options.get(
+                        "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                    )
+                }
+            )
+        )
+        response = request.get()
 
-  async def add(self, account: dict, options: dict = {}) -> Union[Account, ValidationError[Account]]:
-    request = Request(self.store, 'crm/accounts') \
-      .authenticate_as_server() \
-      .with_body(account) \
-      .with_params({
-        'fields': options.get('fields', '*,PersonAccount.*,PersonAccount.Person.Uid')
-      })
-    response = await request.post()
+        if not response.ok:
+            raise response
+        response_json = response.json()
+        return Account(response_json)
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      response_json = response.json()
-      return Account(response_json)
-    else:
-      raise response
+    async def add(
+        self, account: dict, options: dict = {}
+    ) -> Union[Account, ValidationError[Account]]:
+        request = (
+            Request(self.store, "crm/accounts")
+            .authenticate_as_server()
+            .with_body(account)
+            .with_params(
+                {
+                    "fields": options.get(
+                        "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                    )
+                }
+            )
+        )
+        response = await request.post()
 
-  async def update(self, account: dict, options: dict = {}) -> Union[Account, ValidationError[Account]]:
-    request = Request(self.store, f'crm/accounts/{account["Uid"]}') \
-      .authenticate_as_server() \
-      .with_body(account) \
-      .with_params({
-        'fields': options.get('fields', '*,PersonAccount.*,PersonAccount.Person.Uid')
-      })
-    response = await request.put()
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            response_json = response.json()
+            return Account(response_json)
+        else:
+            raise response
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      response_json = response.json()
-      return Account(response_json)
-    else:
-      raise response
+    async def update(
+        self, account: dict, options: dict = {}
+    ) -> Union[Account, ValidationError[Account]]:
+        request = (
+            Request(self.store, f'crm/accounts/{account["Uid"]}')
+            .authenticate_as_server()
+            .with_body(account)
+            .with_params(
+                {
+                    "fields": options.get(
+                        "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                    )
+                }
+            )
+        )
+        response = await request.put()
 
-  async def cancel(self, cancellation: dict) -> Union[None, ValidationError[Account]]:
-    request = Request(self.store, f'crm/accounts/cancellation/{cancellation["Account"]["Uid"]}') \
-      .authenticate_as_server() \
-      .with_body(cancellation)
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            response_json = response.json()
+            return Account(response_json)
+        else:
+            raise response
 
-    response = await request.put()
+    async def cancel(self, cancellation: dict) -> Union[None, ValidationError[Account]]:
+        request = (
+            Request(
+                self.store,
+                f'crm/accounts/cancellation/{cancellation["Account"]["Uid"]}',
+            )
+            .authenticate_as_server()
+            .with_body(cancellation)
+        )
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      return None
-    else:
-      raise response
+        response = await request.put()
 
-  async def delete(self, uid: str) -> None:
-    request = Request(self.store, f'crm/accounts/{uid}').authenticate_as_server()
-    response = await request.delete()
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            return None
+        else:
+            raise response
 
-    if not response.ok:
-      raise response
-    return None
+    async def delete(self, uid: str) -> None:
+        request = Request(self.store, f"crm/accounts/{uid}").authenticate_as_server()
+        response = await request.delete()
 
-  async def extend_trial(self, uid: str, date: datetime) -> Union[None, ValidationError[Subscription]]:
-    request = Request(self.store, f'crm/accounts/{uid}/extend-trial') \
-      .authenticate_as_server() \
-      .with_body({
-        'ToDate': date
-      })
-    response = await request.put()
+        if not response.ok:
+            raise response
+        return None
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      return None
-    else:
-      raise response
+    async def extend_trial(
+        self, uid: str, date: datetime
+    ) -> Union[None, ValidationError[Subscription]]:
+        request = (
+            Request(self.store, f"crm/accounts/{uid}/extend-trial")
+            .authenticate_as_server()
+            .with_body({"ToDate": date})
+        )
+        response = await request.put()
 
-  async def remove_cancellation(self, uid: str) -> Union[None, ValidationError[Account]]:
-    request = Request(self.store, f'crm/accounts/{uid}/remove-cancellation') \
-      .authenticate_as_server()
-    response = await request.put()
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            return None
+        else:
+            raise response
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      return None
-    else:
-      raise response
+    async def remove_cancellation(
+        self, uid: str
+    ) -> Union[None, ValidationError[Account]]:
+        request = Request(
+            self.store, f"crm/accounts/{uid}/remove-cancellation"
+        ).authenticate_as_server()
+        response = await request.put()
 
-  async def expire_current_subscription(self, uid: str) -> Union[None, ValidationError[Subscription]]:
-    request = Request(self.store, f'crm/accounts/{uid}/expire-current-subscription') \
-      .authenticate_as_server()
-    response = await request.put()
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            return None
+        else:
+            raise response
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      return None
-    else:
-      raise response
+    async def expire_current_subscription(
+        self, uid: str
+    ) -> Union[None, ValidationError[Subscription]]:
+        request = Request(
+            self.store, f"crm/accounts/{uid}/expire-current-subscription"
+        ).authenticate_as_server()
+        response = await request.put()
+
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            return None
+        else:
+            raise response
+
 
 class AccountAdd(dict):
-  def __init__(self, name: str, account_stage: AccountStage, **kwargs):
-    super().__init__(**kwargs)
-    self['Name'] = name
-    self['AccountStage'] = account_stage
+    def __init__(self, name: str, account_stage: AccountStage, **kwargs):
+        super().__init__(**kwargs)
+        self["Name"] = name
+        self["AccountStage"] = account_stage
+
 
 class AccountUpdate(dict):
-  def __init__(self, uid: str, **kwargs):
-    super().__init__(**kwargs)
-    self['Uid'] = uid
+    def __init__(self, uid: str, **kwargs):
+        super().__init__(**kwargs)
+        self["Uid"] = uid
+
 
 class AccountCancellation(dict):
-  def __init__(self, account: AccountUpdate, **kwargs):
-    super().__init__(**kwargs)
-    self['Account'] = account
+    def __init__(self, account: AccountUpdate, **kwargs):
+        super().__init__(**kwargs)
+        self["Account"] = account
