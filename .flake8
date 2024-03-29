@@ -1,0 +1,14 @@
+[flake8]
+exclude =
+    migrations
+    __pycache__
+    manage.py
+    settings.py
+    env
+    .env
+    .venv
+    static
+    uploads
+
+max-line-length = 160
+max-complexity = 10
