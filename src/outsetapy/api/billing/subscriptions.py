@@ -30,12 +30,11 @@ class Subscriptions:
     def __init__(self, store: Store):
         self.store = store
 
-    #! this must be incorrect, this should return all subscriptions, right?
     async def get_all(self, options: dict = {}) -> List[PlanFamily]:
         has_more = True
         results = []
         while has_more:
-            request = Request(self.store, "billing/planfamilies")
+            request = Request(self.store, "billing/subscriptions")
             if "limit" in options:
                 request.with_params({"limit": str(options["limit"])})
             if "offset" in options:

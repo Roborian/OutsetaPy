@@ -1,10 +1,15 @@
 import asyncio
 from outsetapy import OutsetaApiClient
+import os
+
+OUTSETA_SUBDOMAIN = os.getenv("OUTSETA_SUBDOMAIN")
+OUTSETA_API_KEY = os.getenv("OUTSETA_API_KEY")
+OUTSETA_API_SECRET = os.getenv("OUTSETA_API_SECRET")
 
 outseta = OutsetaApiClient(
-    subdomain="roborian",
-    apiKey="25daa814-3889-4134-a026-88a1e4ea721c",
-    secretKey="ff39ad05edaea3571e33410d1c5b6ee9",
+    subdomain=OUTSETA_SUBDOMAIN,
+    apiKey=OUTSETA_API_KEY,
+    secretKey=OUTSETA_API_SECRET,
 )
 
 
