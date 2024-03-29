@@ -6,10 +6,6 @@ from outsetapy.util.request import Request, hasMoreResults
 from outsetapy.models.billing.invoice import Invoice
 from outsetapy.models.billing.subscription import Subscription
 from outsetapy.models.billing.invoice_line_item import InvoiceLineItem
-from typing import List, Union
-from datetime import date
-from outsetapy.models.billing.subscription import Subscription
-from outsetapy.models.billing.invoice_line_item import InvoiceLineItem
 
 
 class Invoices:

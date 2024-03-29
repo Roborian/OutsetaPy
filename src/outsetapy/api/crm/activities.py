@@ -1,7 +1,5 @@
 from typing import Union
-from outsetapy.models.shared.entity import EntityType
 from outsetapy.models.crm.activity import Activity
-from outsetapy.models.crm.activity_type import ActivityType
 from outsetapy.models.wrappers.list import List
 from outsetapy.models.wrappers.validation_error import ValidationError
 from outsetapy.util.request import Request, hasMoreResults

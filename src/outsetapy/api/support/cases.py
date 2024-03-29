@@ -1,8 +1,6 @@
 from typing import Union
-from outsetapy.models.crm.person import Person
 from outsetapy.models.support.case import Case
 from outsetapy.models.support.case_history import CaseHistory
-from outsetapy.models.support.case_source import CaseSource
 from outsetapy.models.wrappers.list import List
 from outsetapy.models.wrappers.validation_error import ValidationError
 from outsetapy.util.request import Request, hasMoreResults

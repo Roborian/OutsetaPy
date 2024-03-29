@@ -1,5 +1,4 @@
 from outsetapy import OutsetaApiClient
-import pytest
 from tests.utils import TEST_DATA_DIR
 
 # Directory for testing paling.__init__
@@ -12,4 +11,5 @@ def test_init(options):
         apiKey=options["apiKey"],
         secretKey=options["secretKey"],
     )
-    assert True
+
+    assert outseta.__class__ == OutsetaApiClient

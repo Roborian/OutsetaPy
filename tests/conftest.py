@@ -1,6 +1,4 @@
 import os
-import platform
-from unittest import mock
 
 import pytest
 

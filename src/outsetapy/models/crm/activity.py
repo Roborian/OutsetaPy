@@ -1,9 +1,3 @@
-from typing import Optional
-from datetime import datetime
-from outsetapy.models.crm.activity_type import ActivityType
-from outsetapy.models.shared.entity import EntityType
-
-
 class Activity:
     def __init__(self, data: object):
         self.Title = None

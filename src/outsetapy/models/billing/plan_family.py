@@ -1,7 +1,3 @@
-from typing import List
-from datetime import datetime
-
-
 class PlanFamily:
     def __init__(self, data: object):
         self.Name = data.get("Name")
