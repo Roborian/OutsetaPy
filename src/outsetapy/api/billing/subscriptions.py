@@ -10,123 +10,172 @@ from outsetapy.models.billing.billing_renewal_term import BillingRenewalTerm
 from outsetapy.models.wrappers.list import List
 from outsetapy.models.billing.charge_summary import ChargeSummary
 
+
 class SubscriptionAdd:
-  def __init__(self, subscription: dict):
-    self.__dict__ = subscription
+    def __init__(self, subscription: dict):
+        self.__dict__ = subscription
+
 
 class SubscriptionUpdate:
-  def __init__(self, subscription: dict):
-    self.__dict__ = subscription
+    def __init__(self, subscription: dict):
+        self.__dict__ = subscription
+
 
 class SubscriptionUpgradeRequired:
-  def __init__(self, subscription: dict):
-    self.__dict__ = subscription
+    def __init__(self, subscription: dict):
+        self.__dict__ = subscription
 
 
 class Subscriptions:
-  def __init__(self, store: Store):
-    self.store = store
+    def __init__(self, store: Store):
+        self.store = store
 
-  #! this must be incorrect, this should return all subscriptions, right?
-  async def get_all(self, options: dict = {}) -> List[PlanFamily]:
-    has_more = True
-    results = []
-    while has_more:
-      request = Request(self.store, 'billing/planfamilies')
-      if 'limit' in options:
-        request.with_params({'limit': str(options['limit'])})
-      if 'offset' in options:
-        request.with_params({'offset': str(options['offset'])})
+    #! this must be incorrect, this should return all subscriptions, right?
+    async def get_all(self, options: dict = {}) -> List[PlanFamily]:
+        has_more = True
+        results = []
+        while has_more:
+            request = Request(self.store, "billing/planfamilies")
+            if "limit" in options:
+                request.with_params({"limit": str(options["limit"])})
+            if "offset" in options:
+                request.with_params({"offset": str(options["offset"])})
 
-      response = request.get()
-      if not response.ok:
-        raise response
-      
-      json_response = response.json()
-      results += json_response['items']
-      has_more = hasMoreResults(json_response)
-      options['offset'] = json_response['metadata']['offset'] + json_response['metadata']['limit']
+            response = request.get()
+            if not response.ok:
+                raise response
 
-    return [PlanFamily(json_obj) for json_obj in results]
+            json_response = response.json()
+            results += json_response["items"]
+            has_more = hasMoreResults(json_response)
+            options["offset"] = (
+                json_response["metadata"]["offset"] + json_response["metadata"]["limit"]
+            )
 
-  async def get(self, uid: str, options: dict = {}) -> Subscription:
-    request = Request(self.store, f'billing/subscriptions/{uid}').authenticate_as_server()
+        return [PlanFamily(json_obj) for json_obj in results]
 
-    if 'fields' in options:
-      request.with_params({'fields': options['fields']})
-    else:
-      request.with_params({'fields': '*,Account.Uid,Plan.Uid'})
+    async def get(self, uid: str, options: dict = {}) -> Subscription:
+        request = Request(
+            self.store, f"billing/subscriptions/{uid}"
+        ).authenticate_as_server()
 
-    response = request.get()
+        if "fields" in options:
+            request.with_params({"fields": options["fields"]})
+        else:
+            request.with_params({"fields": "*,Account.Uid,Plan.Uid"})
 
-    if not response.ok:
-      raise response
-    json_response = response.json()
-    return Subscription(json_response)
+        response = request.get()
 
-  async def add(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
-    request = Request(self.store, 'billing/subscriptions/firsttimesubscription').authenticate_as_server().with_body(subscription)
-    response = await request.put()
+        if not response.ok:
+            raise response
+        json_response = response.json()
+        return Subscription(json_response)
 
-    if response.status == 400:
-      raise ValidationError(response.json())
-    elif response.ok:
-      return Subscription(response.json())
-    else:
-      raise response
+    async def add(
+        self, subscription: dict
+    ) -> Subscription | ValidationError[Subscription]:
+        request = (
+            Request(self.store, "billing/subscriptions/firsttimesubscription")
+            .authenticate_as_server()
+            .with_body(subscription)
+        )
+        response = await request.put()
 
-  async def preview_add(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
-    request = Request(self.store, 'billing/subscriptions/compute-charge-summary').authenticate_as_server().with_body(subscription)
-    response = await request.post()
+        if response.status == 400:
+            raise ValidationError(response.json())
+        elif response.ok:
+            return Subscription(response.json())
+        else:
+            raise response
 
-    if response.status == 400:
-      raise ValidationError(response.json())
-    elif response.ok:
-      return ChargeSummary(response.json())
-    else:
-      raise response
+    async def preview_add(
+        self, subscription: dict
+    ) -> ChargeSummary | ValidationError[Subscription]:
+        request = (
+            Request(self.store, "billing/subscriptions/compute-charge-summary")
+            .authenticate_as_server()
+            .with_body(subscription)
+        )
+        response = await request.post()
 
-  async def update(self, subscription: dict) -> Subscription | ValidationError[Subscription]:
-    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscription').authenticate_as_server().with_body(subscription)
-    response = await request.put()
+        if response.status == 400:
+            raise ValidationError(response.json())
+        elif response.ok:
+            return ChargeSummary(response.json())
+        else:
+            raise response
 
-    if response.status == 400:
-      raise ValidationError(response.json())
-    elif response.ok:
-      return Subscription(response.json())
-    else:
-      raise response
+    async def update(
+        self, subscription: dict
+    ) -> Subscription | ValidationError[Subscription]:
+        request = (
+            Request(
+                self.store,
+                f'billing/subscriptions/{subscription["Uid"]}/changesubscription',
+            )
+            .authenticate_as_server()
+            .with_body(subscription)
+        )
+        response = await request.put()
 
-  async def preview_update(self, subscription: dict) -> ChargeSummary | ValidationError[Subscription]:
-    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/changesubscriptionpreview').authenticate_as_server().with_body(subscription)
-    response = await request.put()
+        if response.status == 400:
+            raise ValidationError(response.json())
+        elif response.ok:
+            return Subscription(response.json())
+        else:
+            raise response
 
-    if response.status == 400:
-      raise ValidationError(response.json())
-    elif response.ok:
-      return ChargeSummary(response.json())
-    else:
-      raise response
+    async def preview_update(
+        self, subscription: dict
+    ) -> ChargeSummary | ValidationError[Subscription]:
+        request = (
+            Request(
+                self.store,
+                f'billing/subscriptions/{subscription["Uid"]}/changesubscriptionpreview',
+            )
+            .authenticate_as_server()
+            .with_body(subscription)
+        )
+        response = await request.put()
 
-  async def set_subscription_upgrade_required(self, subscription: dict) -> Subscription | ValidationError[None]:
-    request = Request(self.store, f'billing/subscriptions/{subscription["Uid"]}/setsubscriptionupgraderequired').authenticate_as_server().with_body(subscription)
-    response = await request.put()
+        if response.status == 400:
+            raise ValidationError(response.json())
+        elif response.ok:
+            return ChargeSummary(response.json())
+        else:
+            raise response
 
-    if response.status == 400:
-      raise ValidationError(response.json())
-    elif response.ok:
-      return Subscription(response.json())
-    else:
-      raise response
+    async def set_subscription_upgrade_required(
+        self, subscription: dict
+    ) -> Subscription | ValidationError[None]:
+        request = (
+            Request(
+                self.store,
+                f'billing/subscriptions/{subscription["Uid"]}/setsubscriptionupgraderequired',
+            )
+            .authenticate_as_server()
+            .with_body(subscription)
+        )
+        response = await request.put()
 
-  async def change_trial_to_subscribed(self, uid: str) -> None | ValidationError[Account]:
-    request = Request(self.store, f'billing/subscriptions/{uid}/changetrialtosubscribed').authenticate_as_server()
-    response = await request.put()
+        if response.status == 400:
+            raise ValidationError(response.json())
+        elif response.ok:
+            return Subscription(response.json())
+        else:
+            raise response
 
-    if response.status == 400:
-      raise Exception(response.json())
-    elif response.ok:
-      return None
-    else:
-      raise response
+    async def change_trial_to_subscribed(
+        self, uid: str
+    ) -> None | ValidationError[Account]:
+        request = Request(
+            self.store, f"billing/subscriptions/{uid}/changetrialtosubscribed"
+        ).authenticate_as_server()
+        response = await request.put()
 
+        if response.status == 400:
+            raise Exception(response.json())
+        elif response.ok:
+            return None
+        else:
+            raise response

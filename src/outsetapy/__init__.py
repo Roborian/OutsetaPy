@@ -6,6 +6,7 @@ from outsetapy.api.user import User
 from outsetapy.api.billing import Billing
 from outsetapy.api.crm import Crm
 
+
 class OutsetaApiClient:
     def __init__(self, subdomain, accessToken=None, apiKey=None, secretKey=None):
         """
