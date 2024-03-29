@@ -69,7 +69,7 @@ class Subscriptions:
 
     async def add(
         self, subscription: dict
-    ) -> Subscription | ValidationError[Subscription]:
+    ) -> Subscription:
         request = (
             Request(self.store, "billing/subscriptions/firsttimesubscription")
             .authenticate_as_server()
