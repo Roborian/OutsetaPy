@@ -27,7 +27,7 @@ class Subscriptions:
     def __init__(self, store: Store):
         self.store = store
 
-    async def get_all(self, options: dict = {}) -> List[PlanFamily]:
+    async def get_all(self, options: dict = {}) -> List[Subscription]:
         has_more = True
         results = []
         while has_more:
@@ -48,7 +48,7 @@ class Subscriptions:
                 json_response["metadata"]["offset"] + json_response["metadata"]["limit"]
             )
 
-        return [PlanFamily(json_obj) for json_obj in results]
+        return [Subscription(json_obj, self.store) for json_obj in results]
 
     async def get(self, uid: str, options: dict = {}) -> Subscription:
         request = Request(
@@ -65,7 +65,7 @@ class Subscriptions:
         if not response.ok:
             raise Exception(response)
         json_response = response.json()
-        return Subscription(json_response)
+        return Subscription(json_response, self.store)
 
     async def add(
         self, subscription: dict
@@ -80,7 +80,7 @@ class Subscriptions:
         if response.status == 400:
             raise ValidationError(response.json())
         elif response.ok:
-            return Subscription(response.json())
+            return Subscription(response.json(), self.store)
         else:
             raise Exception(response)
 
@@ -117,7 +117,7 @@ class Subscriptions:
         if response.status == 400:
             raise ValidationError(response.json())
         elif response.ok:
-            return Subscription(response.json())
+            return Subscription(response.json(), self.store)
         else:
             raise Exception(response)
 
@@ -157,7 +157,7 @@ class Subscriptions:
         if response.status == 400:
             raise ValidationError(response.json())
         elif response.ok:
-            return Subscription(response.json())
+            return Subscription(response.json(), self.store)
         else:
             raise Exception(response)
 
