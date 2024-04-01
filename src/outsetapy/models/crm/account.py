@@ -3,8 +3,6 @@ import importlib
 from outsetapy.util.store import Store
 from outsetapy.models.shared.address import Address
 from .deal import Deal
-from .person_account import PersonAccount
-from .account_stage import AccountStage
 
 
 class Subscription:
@@ -21,7 +19,7 @@ class Account:
         self.IsDemo = False
         self.BillingAddress = Address("", "", "", "")
         self.MailingAddress = Address("", "", "", "")
-        self.AccountStage = AccountStage("", "")
+        self.AccountStage = None
         self.PaymentInformation = None
         self.PersonAccount = []
         self.Subscriptions = []
