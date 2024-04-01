@@ -1,6 +1,6 @@
 [project]
 name = "outsetapy"
-version = "0.1.4"
+version = "0.1.4a"
 
 authors = [
   { name="Roborian, Inc", email="info@roborian.com" },
