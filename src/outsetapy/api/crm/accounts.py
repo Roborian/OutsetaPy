@@ -21,7 +21,7 @@ class Accounts:
                 .with_params(
                     {
                         "fields": options.get(
-                            "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                            "fields", "*,PrimaryContact.*,Subscriptions.*,Subscriptions.Plan.*,CurrentSubscription.*,CurrentSubscription.Plan.*,PersonAccount.*,PersonAccount.Person.Uid"
                         )
                     }
                 )
