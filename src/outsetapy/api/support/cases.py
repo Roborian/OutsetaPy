@@ -40,7 +40,7 @@ class Cases:
             response = request.get()
 
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             response_json = response.json()
             results += response_json["items"]
@@ -76,7 +76,7 @@ class Cases:
             response_json = response.json()
             return Case(response_json)
         else:
-            raise response
+            raise Exception(response)
 
     async def add_reply_from_agent(self, reply: dict) -> None:
         request = (
@@ -88,7 +88,7 @@ class Cases:
         response = await request.post()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
 
     async def add_reply_from_client(self, reply: dict) -> CaseHistory:
         request = Request(
@@ -101,7 +101,7 @@ class Cases:
         if response.ok:
             return CaseHistory(response.json())
         else:
-            raise response
+            raise Exception(response)
 
 
 class CaseAdd:

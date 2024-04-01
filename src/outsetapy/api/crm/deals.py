@@ -42,7 +42,7 @@ class Deals:
 
             response = request.get()
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             json_response = response.json()
             results += json_response["items"]
@@ -63,7 +63,7 @@ class Deals:
         response = request.get()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
 
         json_response = response.json()
         return Deal(**json_response)
@@ -86,7 +86,7 @@ class Deals:
             json_response = response.json()
             return Deal(**json_response)
         else:
-            raise response
+            raise Exception(response)
 
     async def update(
         self, deal: DealUpdate, fields=None
@@ -106,7 +106,7 @@ class Deals:
             json_response = response.json()
             return Deal(**json_response)
         else:
-            raise response
+            raise Exception(response)
 
     async def delete(self, uid: str) -> None:
         request = Request(self.store, f"crm/deals/{uid}").authenticate_as_server()
@@ -114,6 +114,6 @@ class Deals:
         response = await request.delete()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
 
         return None

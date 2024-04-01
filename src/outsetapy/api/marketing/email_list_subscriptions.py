@@ -37,7 +37,7 @@ class EmailListSubscriptions:
             response = request.get()
 
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             json_response = response.json()
             results += json_response
@@ -71,7 +71,7 @@ class EmailListSubscriptions:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)
 
     async def delete(self, subscription: dict) -> None:
         request = Request(
@@ -81,7 +81,7 @@ class EmailListSubscriptions:
         response = await request.delete()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
         return None
 
 

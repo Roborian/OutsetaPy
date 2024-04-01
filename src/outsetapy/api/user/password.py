@@ -22,4 +22,4 @@ class Password:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)

@@ -23,7 +23,7 @@ class Profile:
         response = request.get()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
         return Person(response.json())
 
     async def update(
@@ -39,4 +39,4 @@ class Profile:
         elif response.ok:
             return Person(response.json())
         else:
-            raise response
+            raise Exception(response)

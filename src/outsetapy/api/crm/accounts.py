@@ -35,7 +35,7 @@ class Accounts:
 
             response = request.get()
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             json_response = response.json()
             results += json_response["items"]
@@ -44,7 +44,7 @@ class Accounts:
                 json_response["metadata"]["offset"] + json_response["metadata"]["limit"]
             )
 
-        return [Account(json_obj) for json_obj in results]
+        return [Account(json_obj, self.store) for json_obj in results]
 
     async def get(self, uid: str, options: dict = {}) -> Account:
         request = (
@@ -61,9 +61,9 @@ class Accounts:
         response = request.get()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
         response_json = response.json()
-        return Account(response_json)
+        return Account(response_json, self.store)
 
     async def add(
         self, account: dict, options: dict = {}
@@ -86,9 +86,9 @@ class Accounts:
             raise Exception(response.json())
         elif response.ok:
             response_json = response.json()
-            return Account(response_json)
+            return Account(response_json, self.store)
         else:
-            raise response
+            raise Exception(response)
 
     async def update(
         self, account: dict, options: dict = {}
@@ -111,9 +111,9 @@ class Accounts:
             raise Exception(response.json())
         elif response.ok:
             response_json = response.json()
-            return Account(response_json)
+            return Account(response_json, self.store)
         else:
-            raise response
+            raise Exception(response)
 
     async def cancel(self, cancellation: dict) -> Union[None, ValidationError[Account]]:
         request = (
@@ -132,14 +132,14 @@ class Accounts:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)
 
     async def delete(self, uid: str) -> None:
         request = Request(self.store, f"crm/accounts/{uid}").authenticate_as_server()
         response = await request.delete()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
         return None
 
     async def extend_trial(
@@ -157,7 +157,7 @@ class Accounts:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)
 
     async def remove_cancellation(
         self, uid: str
@@ -172,7 +172,7 @@ class Accounts:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)
 
     async def expire_current_subscription(
         self, uid: str
@@ -187,7 +187,7 @@ class Accounts:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)
 
 
 class AccountAdd(dict):
