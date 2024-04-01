@@ -1,7 +1,9 @@
+import importlib
 from typing import Optional
 from datetime import datetime
 from dataclasses import dataclass
 from .billing_renewal_term import BillingRenewalTerm as _BillingRenewalTerm
+from outsetapy.util.store import Store
 
 
 @dataclass
@@ -20,7 +22,8 @@ class Subscription:
     Created: datetime
     Updated: datetime
 
-    def __init(self, data: object):
+    def __init__(self, data: object, store: Store):
+        self.__store = store
         self.Uid = None
         self.BillingRenewalTerm = None
         self.Account_Uid = None
@@ -37,8 +40,8 @@ class Subscription:
         if "_objectType" in data and data["_objectType"] == "Subscription":
             self.Uid = data["Uid"]
             self.BillingRenewalTerm = data["BillingRenewalTerm"]
-            self.Account_Uid = data["Account.Uid"]
-            self.Plan_Uid = data["Plan.Uid"]
+            self.Account_Uid = data["Account"]['Uid']
+            self._plan = data["Plan"]['Uid']
             self.Quantity = data["Quantity"]
             self.StartDate = data["StartDate"]
             self.EndDate = data["EndDate"]
@@ -50,3 +53,8 @@ class Subscription:
             self.Updated = data["Updated"]
         else:
             raise ValueError("Invalid object type")
+        
+    @property
+    async def Plan(self):
+        plan_api = importlib.import_module("outsetapy.api.billing.plans").Plans(self.__store)
+        return await plan_api.get(self._plan)
