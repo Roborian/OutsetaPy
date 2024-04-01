@@ -2,14 +2,7 @@ from datetime import datetime
 import importlib
 from outsetapy.util.store import Store
 from outsetapy.models.shared.address import Address
-from .deal import Deal
-
-
-class Subscription:
-    def __init__(self, subscription_id: str, subscription_name: str):
-        self.subscription_id = subscription_id
-        self.subscription_name = subscription_name
-
+# from .deal import Deal
 
 class Account:
     def __init__(self, data: object, store: Store):
@@ -79,7 +72,7 @@ class Account:
             self.Updated = data["Updated"]
         elif "_objectType" in data:
             raise Exception(f"Invalid object type: {data['_objectType']}")
-        
+
     @property
     async def CurrentSubscription(self):
         subscription_api = importlib.import_module("outsetapy.api.billing.subscriptions").Subscriptions(self.__store)
