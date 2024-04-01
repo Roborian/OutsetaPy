@@ -33,7 +33,7 @@ class Invoices:
         ).authenticate_as_server()
         response = request.get()
         if not response.ok:
-            raise response
+            raise Exception(response)
         return response.json()
 
     async def get_all(self, options: dict = {}) -> List[Invoice]:
@@ -48,7 +48,7 @@ class Invoices:
 
             response = request.get()
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             json_response = response.json()
             results += json_response["items"]

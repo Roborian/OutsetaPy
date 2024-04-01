@@ -39,7 +39,7 @@ class Subscriptions:
 
             response = request.get()
             if not response.ok:
-                raise response
+                raise Exception(response)
 
             json_response = response.json()
             results += json_response["items"]
@@ -63,7 +63,7 @@ class Subscriptions:
         response = request.get()
 
         if not response.ok:
-            raise response
+            raise Exception(response)
         json_response = response.json()
         return Subscription(json_response)
 
@@ -82,7 +82,7 @@ class Subscriptions:
         elif response.ok:
             return Subscription(response.json())
         else:
-            raise response
+            raise Exception(response)
 
     async def preview_add(
         self, subscription: dict
@@ -99,7 +99,7 @@ class Subscriptions:
         elif response.ok:
             return ChargeSummary(response.json())
         else:
-            raise response
+            raise Exception(response)
 
     async def update(
         self, subscription: dict
@@ -119,7 +119,7 @@ class Subscriptions:
         elif response.ok:
             return Subscription(response.json())
         else:
-            raise response
+            raise Exception(response)
 
     async def preview_update(
         self, subscription: dict
@@ -139,7 +139,7 @@ class Subscriptions:
         elif response.ok:
             return ChargeSummary(response.json())
         else:
-            raise response
+            raise Exception(response)
 
     async def set_subscription_upgrade_required(
         self, subscription: dict
@@ -159,7 +159,7 @@ class Subscriptions:
         elif response.ok:
             return Subscription(response.json())
         else:
-            raise response
+            raise Exception(response)
 
     async def change_trial_to_subscribed(
         self, uid: str
@@ -174,4 +174,4 @@ class Subscriptions:
         elif response.ok:
             return None
         else:
-            raise response
+            raise Exception(response)

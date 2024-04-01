@@ -46,7 +46,7 @@ class Activities:
                     + json_response["metadata"]["limit"]
                 )
             else:
-                raise response
+                raise Exception(response)
 
         return [Activity(json_obj) for json_obj in results]
 
@@ -67,7 +67,7 @@ class Activities:
             json_response = response.json()
             return Activity(json_response)
         else:
-            raise response
+            raise Exception(response)
 
 
 class ActivityAdd:

@@ -42,7 +42,7 @@ class Plans:
             response = request.get()
 
             if not response.ok:
-                raise response
+                raise Exception(response)
             json_response = response.json()
             results += json_response["items"]
             has_more = hasMoreResults(json_response)
