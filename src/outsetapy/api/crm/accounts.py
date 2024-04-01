@@ -53,7 +53,8 @@ class Accounts:
             .with_params(
                 {
                     "fields": options.get(
-                        "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                        # "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                        "fields", "*,PersonAccount.*,BillingAddress.*,MailingAddress.*,PersonAccount.Person.Uid,CurrentSubscription.Uid,LatestSubscription.Uid, PrimarySubscription.Uid, PrimaryContact.*"
                     )
                 }
             )
