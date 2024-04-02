@@ -24,11 +24,11 @@ class Profile:
 
         if not response.ok:
             raise Exception(response)
-        return Person(response.json())
+        return Person(response.json(), self.store)
 
     async def update(
         self, profile: ProfileUpdate
-    ) -> Union[Person, ValidationError[Person]]:
+    ) -> Person:
         request = (
             Request(self.store, "profile").authenticate_as_user().with_body(profile)
         )
@@ -37,6 +37,6 @@ class Profile:
         if response.status == 400:
             raise Exception(response.json())
         elif response.ok:
-            return Person(response.json())
+            return Person(response.json(), self.store)
         else:
             raise Exception(response)
