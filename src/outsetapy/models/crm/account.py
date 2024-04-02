@@ -30,6 +30,7 @@ class Account:
         self.LatestSubscription = None
         self.PrimaryContact = None
         self.PrimarySubscription = None
+        self.CurrentSubscription = None
         self.RecaptchaToken = None
         self.LifetimeRevenue = 0
         self.Uid = ""
@@ -59,10 +60,7 @@ class Account:
             self.AccountStageLabel = data["AccountStageLabel"]
             self.DomainName = data["DomainName"]
             self.LatestSubscription = data["LatestSubscription"]
-            if "CurrentSubscription" in data and data["CurrentSubscription"] and "Uid" in data["CurrentSubscription"]:
-                self._current_subscription = data["CurrentSubscription"]['Uid']
-            else:
-                self._current_subscription = None
+            self.CurrentSubscription = data['CurrentSubscription']
             self.PrimaryContact = data["PrimaryContact"]
             self.PrimarySubscription = data["PrimarySubscription"]
             self.RecaptchaToken = data["RecaptchaToken"]
@@ -72,9 +70,3 @@ class Account:
             self.Updated = data["Updated"]
         elif "_objectType" in data:
             raise Exception(f"Invalid object type: {data['_objectType']}")
-
-    @property
-    async def CurrentSubscription(self):
-        subscription_api = importlib.import_module("outsetapy.api.billing.subscriptions").Subscriptions(self.__store)
-        CurrentSubscription = await subscription_api.get(self._current_subscription)
-        return CurrentSubscription
