@@ -1,4 +1,3 @@
-from outsetapy.models.billing.plan_family import PlanFamily
 from outsetapy.util.store import Store
 from outsetapy.models.wrappers.validation_error import ValidationError
 from outsetapy.util.request import Request, hasMoreResults
@@ -67,9 +66,7 @@ class Subscriptions:
         json_response = response.json()
         return Subscription(json_response, self.store)
 
-    async def add(
-        self, subscription: dict
-    ) -> Subscription:
+    async def add(self, subscription: dict) -> Subscription:
         request = (
             Request(self.store, "billing/subscriptions/firsttimesubscription")
             .authenticate_as_server()

@@ -1,8 +1,9 @@
 from datetime import datetime
-import importlib
 from outsetapy.util.store import Store
 from outsetapy.models.shared.address import Address
+
 # from .deal import Deal
+
 
 class Account:
     def __init__(self, data: object, store: Store):
@@ -60,7 +61,7 @@ class Account:
             self.AccountStageLabel = data["AccountStageLabel"]
             self.DomainName = data["DomainName"]
             self.LatestSubscription = data["LatestSubscription"]
-            self.CurrentSubscription = data['CurrentSubscription']
+            self.CurrentSubscription = data["CurrentSubscription"]
             self.PrimaryContact = data["PrimaryContact"]
             self.PrimarySubscription = data["PrimarySubscription"]
             self.RecaptchaToken = data["RecaptchaToken"]

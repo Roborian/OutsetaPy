@@ -40,8 +40,8 @@ class Subscription:
         if "_objectType" in data and data["_objectType"] == "Subscription":
             self.Uid = data["Uid"]
             self.BillingRenewalTerm = data["BillingRenewalTerm"]
-            self.Account_Uid = data["Account"]['Uid']
-            self._plan = data["Plan"]['Uid']
+            self.Account_Uid = data["Account"]["Uid"]
+            self._plan = data["Plan"]["Uid"]
             self.Quantity = data["Quantity"]
             self.StartDate = data["StartDate"]
             self.EndDate = data["EndDate"]
@@ -53,8 +53,10 @@ class Subscription:
             self.Updated = data["Updated"]
         else:
             raise ValueError("Invalid object type")
-        
+
     @property
     async def Plan(self):
-        plan_api = importlib.import_module("outsetapy.api.billing.plans").Plans(self.__store)
+        plan_api = importlib.import_module("outsetapy.api.billing.plans").Plans(
+            self.__store
+        )
         return await plan_api.get(self._plan)
