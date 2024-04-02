@@ -15,6 +15,7 @@ class Request:
                 "user-agent": "OutsetaPy/" + OUTSETAPY_VERSION,
             }
         }
+        self._body = None
 
     def authenticate_as_user(self):
         self._options["headers"][
@@ -47,10 +48,10 @@ class Request:
         return self
 
     def with_body(self, body: Dict[str, Any]):
-        if "body" in self._options:
-            existing_body = self._options["body"]
+        if self._body:
+            existing_body = self._body
             body = {**existing_body, **body}
-        self._options["body"] = body
+        self._body = body
         return self
 
     def get(self) -> requests.Response:
@@ -69,8 +70,8 @@ class Request:
         return self.execute("DELETE")
 
     def execute(self, method) -> requests.Response:
-        self._options["method"] = method
-        return requests.request(**self._options, url=self.url)
+        self._options["method"] = method 
+        return requests.request(**self._options, url=self.url, json=self._body)
 
 
 def hasMoreResults(meta) -> bool:

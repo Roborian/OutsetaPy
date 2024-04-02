@@ -42,6 +42,11 @@ class Subscription:
             self.BillingRenewalTerm = data["BillingRenewalTerm"]
             self.Account_Uid = data["Account"]["Uid"]
             self._plan = data["Plan"]["Uid"]
+            if "Account" in data and data['Account'] is not None and '_objectType' in data["Account"] and data["Account"]["_objectType"] == 'Account':
+                self.Account_Uid = data["Account"]['Uid']
+            else:
+                self.Account_Uid = data["Account"]
+            self._plan = data["Plan"]['Uid']
             self.Quantity = data["Quantity"]
             self.StartDate = data["StartDate"]
             self.EndDate = data["EndDate"]
