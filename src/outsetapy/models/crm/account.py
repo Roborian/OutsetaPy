@@ -2,6 +2,8 @@ from datetime import datetime
 import importlib
 from outsetapy.util.store import Store
 from outsetapy.models.shared.address import Address
+from outsetapy.models.billing.subscription import Subscription
+
 # from .deal import Deal
 
 class Account:
@@ -10,8 +12,8 @@ class Account:
         self.Name = None
         self.ClientIdentifier = None
         self.IsDemo = False
-        self.BillingAddress = Address("", "", "", "")
-        self.MailingAddress = Address("", "", "", "")
+        self.BillingAddress = Address()
+        self.MailingAddress = Address()
         self.AccountStage = None
         self.PaymentInformation = None
         self.PersonAccount = []
@@ -59,10 +61,15 @@ class Account:
             self.AccountStageLabel = data["AccountStageLabel"]
             self.DomainName = data["DomainName"]
             self.LatestSubscription = data["LatestSubscription"]
-            if "CurrentSubscription" in data and data["CurrentSubscription"] and "Uid" in data["CurrentSubscription"]:
-                self._current_subscription = data["CurrentSubscription"]['Uid']
+            if "CurrentSubscription" in data and data["CurrentSubscription"] is not None and "Uid" in data["CurrentSubscription"]:
+                self._current_subscription = data["CurrentSubscription"]["Uid"]
             else:
-                self._current_subscription = None
+                self._current_subscription = data["CurrentSubscription"]
+
+            # if "CurrentSubscription" in data and '_objectType' in data["CurrentSubscription"] and data["Account"]["_objectType"] == 'Subscription':
+            #     self.CurrentSubscription = Subscription(data["CurrentSubscription"], self.__store)
+            # else:
+            #     self.CurrentSubscription = data["CurrentSubscription"]
             self.PrimaryContact = data["PrimaryContact"]
             self.PrimarySubscription = data["PrimarySubscription"]
             self.RecaptchaToken = data["RecaptchaToken"]
@@ -73,8 +80,25 @@ class Account:
         elif "_objectType" in data:
             raise Exception(f"Invalid object type: {data['_objectType']}")
 
+    # @property
+    # async def CurrentSubscription(self):
+    #     subscription_api = importlib.import_module("outsetapy.api.billing.subscriptions").Subscriptions(self.__store)
+    #     CurrentSubscription = await subscription_api.get(self._current_subscription)
+    #     return CurrentSubscription
     @property
-    async def CurrentSubscription(self):
+    def CurrentSubscription(self) -> Subscription:
+        if type(self._current_subscription) == Subscription:
+            return self._current_subscription
+        if self._current_subscription is None:
+            return None
         subscription_api = importlib.import_module("outsetapy.api.billing.subscriptions").Subscriptions(self.__store)
-        CurrentSubscription = await subscription_api.get(self._current_subscription)
-        return CurrentSubscription
+        return subscription_api.get(self._current_subscription)
+    @CurrentSubscription.setter
+    def CurrentSubscription(self, value):
+        if type(value) == Subscription:
+            self._current_subscription = value
+        else:
+            if hasattr(value, "Uid"):
+                self._current_subscription = value.Uid
+            else:
+                self._current_subscription = value
