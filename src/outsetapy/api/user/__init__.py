@@ -47,7 +47,7 @@ class User:
                 }
             )
         )
-        response = await request.post()
+        response = request.post()
         if not response.ok:
             raise Exception(response)
 
