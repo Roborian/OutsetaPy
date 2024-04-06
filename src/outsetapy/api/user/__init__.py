@@ -1,5 +1,6 @@
 from outsetapy.util.store import Store
 from outsetapy.util.request import Request
+from outsetapy.util.credentials import UserCredentials
 from .profile import Profile
 from .password import Password
 
@@ -21,17 +22,16 @@ class User:
         request = Request(self.store, "tokens").with_body(
             {
                 "username": username,
-                "password": password,
-                "grant_type": "password",
-                "client_id": "outseta_auth_widget",
+                "password": password
             }
         )
-        response = await request.post()
+        response = request.post()
         if not response.ok:
-            raise Exception(response)
+            raise Exception(response.content)
 
         response_body = response.json()
-        self.store.user_auth.access_token = response_body["access_token"]
+        
+        self.store.user_auth = UserCredentials(response_body["access_token"])
         return response_body
 
     async def impersonate(self, username: str) -> LoginResponse:
@@ -47,7 +47,7 @@ class User:
                 }
             )
         )
-        response = await request.post()
+        response = request.post()
         if not response.ok:
             raise Exception(response)
 
