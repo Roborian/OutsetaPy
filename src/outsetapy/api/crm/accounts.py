@@ -14,6 +14,7 @@ class Accounts:
     async def get_all(self, options: dict = {}) -> List[Account]:
         has_more = True
         results = []
+        fields = "*,PrimaryContact.*,Subscriptions.*,Subscriptions.Plan.*,CurrentSubscription.*,"
         while has_more:
             request = (
                 Request(self.store, "crm/accounts")
@@ -21,7 +22,8 @@ class Accounts:
                 .with_params(
                     {
                         "fields": options.get(
-                            "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
+                            "fields",
+                            f"{fields}CurrentSubscription.Plan.*,PersonAccount.*,PersonAccount.Person.Uid",
                         )
                     }
                 )
@@ -47,6 +49,7 @@ class Accounts:
         return [Account(json_obj, self.store) for json_obj in results]
 
     async def get(self, uid: str, options: dict = {}) -> Account:
+        fields = "*,PersonAccount.*,BillingAddress.*,MailingAddress.*,PersonAccount.Person.Uid,CurrentSubscription.Uid,"
         request = (
             Request(self.store, f"crm/accounts/{uid}")
             .authenticate_as_server()
@@ -54,7 +57,8 @@ class Accounts:
                 {
                     "fields": options.get(
                         # "fields", "*,PersonAccount.*,PersonAccount.Person.Uid"
-                        "fields", "*,PersonAccount.*,BillingAddress.*,MailingAddress.*,PersonAccount.Person.Uid,CurrentSubscription.Uid,LatestSubscription.Uid, PrimarySubscription.Uid, PrimaryContact.*"
+                        "fields",
+                        f"{fields}LatestSubscription.Uid, PrimarySubscription.Uid, PrimaryContact.*",
                     )
                 }
             )
