@@ -142,7 +142,24 @@ class Accounts:
         if not response.ok:
             raise Exception(response)
         return None
-
+    
+    async def add_person_to_account(
+        self, account_uid: str, email: str, first_name: str, last_name: str
+    ) -> Union[None, ValidationError[Account]]:
+        request = (
+            Request(self.store, f"crm/accounts/{account_uid}/memberships?sendWelcomeEmail=true")
+            .authenticate_as_server()
+            .with_body(
+                {
+                    "Account": {"Uid": account_uid},
+                    "Person": {"Email": email, "FirstName": first_name, "LastName": last_name},
+                    "IsPrimary": "false",
+                }
+            )
+        )
+        response = request.post()
+        return response
+    
     async def extend_trial(
         self, uid: str, date: datetime
     ) -> Union[None, ValidationError[Subscription]]:
